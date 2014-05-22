@@ -3,7 +3,7 @@ import java.util.concurrent.*;
 
 /**
  * @class SynchronizedQueue
- * 
+ *
  * @brief This class tests the use of Java Threads and several
  *        implementations of the Java BlockingQueue interface.
  */
@@ -40,7 +40,7 @@ public class SynchronizedQueue {
      *       String for easy output.
      */
    public enum SynchronizedQueueResult {
-        RAN_PROPERLY("Threads Ran Properly."), 
+        RAN_PROPERLY("Threads Ran Properly."),
         JOIN_NEVER_CALLED("Join() never called."),
         THREADS_NEVER_RAN("Threads never ran."),
         THREADS_NEVER_INTERUPTED("Threads never interrupted."),
@@ -71,7 +71,7 @@ public class SynchronizedQueue {
 
     /**
      * @class QueueAdapter
-     * 
+     *
      * @brief Applies a variant of the GoF Adapter pattern that
      *        enables us to test several implementations of the
      *        BlockingQueue interface.
@@ -91,7 +91,7 @@ public class SynchronizedQueue {
 
         /**
          * Insert msg at the tail of the queue.
-         * 
+         *
          * @throws TimeoutException and InterruptedException
          */
         public void put(E msg) throws InterruptedException, TimeoutException {
@@ -106,7 +106,7 @@ public class SynchronizedQueue {
 
         /**
          * Remove msg from the head of the queue.
-         * 
+         *
          * @throws TimeoutException
          *             , InterruptedException
          */
@@ -138,6 +138,7 @@ public class SynchronizedQueue {
                 for (int i = 0; i < mMaxIterations; i++)
                     try {
                         mQueue.put(i);
+//                      System.out.println(i + " <-- ");
                         if (Thread.interrupted())
                             throw new InterruptedException();
                     } catch (InterruptedException e) {
@@ -175,6 +176,7 @@ public class SynchronizedQueue {
                         }
                         Integer result = (Integer) mQueue.take();
 
+//                        System.out.println(result + " --> ");
                         System.out.println("iteration = " + result);
                     } catch (InterruptedException e) {
                         System.out.println("Thread properly interrupted by "
@@ -210,54 +212,61 @@ public class SynchronizedQueue {
      */
     public static SynchronizedQueueResult testQueue(QueueAdapter<Integer> queue) {
         try {
-            mQueue = queue;
+          mQueue = queue;
 
-            // Please make sure to keep all the "TODO" comments in the
-            // code below to make it easy for peer reviewers to find
-            // them.
+          // Please make sure to keep all the "TODO" comments in the
+          // code below to make it easy for peer reviewers to find
+          // them.
 
-            // TODO - you fill in here to replace the null
-            // initialization below to create two Java Threads, one
-            // that's passed the producerRunnable and the other that's
-            // passed the consumerRunnable.
-            Thread consumer = null;
-            Thread producer = null;
+          // TODO - you fill in here to replace the null
+          // initialization below to create two Java Threads, one
+          // that's passed the producerRunnable and the other that's
+          // passed the consumerRunnable.
+          Thread consumer = new Thread(consumerRunnable);
+          Thread producer = new Thread(producerRunnable);
 
-            // TODO - you fill in here to start the threads. More
-            // interesting results will occur if you start the
-            // consumer first.
-            
-            // Give the Threads a chance to run before interrupting
-            // them.
-            Thread.sleep(100);
+          // TODO - you fill in here to start the threads. More
+          // interesting results will occur if you start the
+          // consumer first.
+          consumer.start();
+          producer.start();
 
-            // TODO - you fill in here to interrupt the threads.
+          // Give the Threads a chance to run before interrupting
+          // them.
+          Thread.sleep(100);
 
-            // TODO - you fill in here to wait for the threads to
-            // exit.
-            
-            // Do some sanity checking to see if the Threads work as
-            // expected.
-            if (consumer == null 
-                || producer == null)
-                return SynchronizedQueueResult.THREADS_NEVER_CREATED;
-            else if (consumer.isAlive() 
-                     || producer.isAlive())
-                return SynchronizedQueueResult.JOIN_NEVER_CALLED;
-            else if (mConsumerCounter == 0 
-                     || mProducerCounter == 0)
-                return SynchronizedQueueResult.THREADS_NEVER_RAN;
-            else if (mConsumerCounter == mMaxIterations
-                     || mProducerCounter == mMaxIterations) 
-                return SynchronizedQueueResult.THREADS_NEVER_INTERUPTED;
-            else if (mConsumerCounter == FAILURE_OCCURRED
-                     || mProducerCounter == FAILURE_OCCURRED) 
-                return SynchronizedQueueResult.THREADS_THREW_EXCEPTION;
-            else if (mConsumerCounter == TIMEOUT_OCCURRED
-                     || mProducerCounter == TIMEOUT_OCCURRED) 
-                return SynchronizedQueueResult.THREADS_TIMEDOUT;
-            else
-                return SynchronizedQueueResult.RAN_PROPERLY;
+          // TODO - you fill in here to interrupt the threads.
+          consumer.interrupt();
+          producer.interrupt();
+
+          // TODO - you fill in here to wait for the threads to
+          // exit.
+          consumer.join();
+          producer.join();
+
+          // Do some sanity checking to see if the Threads work as
+          // expected.
+          if (consumer == null
+              || producer == null) {
+            return SynchronizedQueueResult.THREADS_NEVER_CREATED;
+          } else if (consumer.isAlive()
+              || producer.isAlive()) {
+            return SynchronizedQueueResult.JOIN_NEVER_CALLED;
+          } else if (mConsumerCounter == 0
+              || mProducerCounter == 0) {
+            return SynchronizedQueueResult.THREADS_NEVER_RAN;
+          } else if (mConsumerCounter == mMaxIterations
+              || mProducerCounter == mMaxIterations) {
+            return SynchronizedQueueResult.THREADS_NEVER_INTERUPTED;
+          } else if (mConsumerCounter == FAILURE_OCCURRED
+              || mProducerCounter == FAILURE_OCCURRED) {
+            return SynchronizedQueueResult.THREADS_THREW_EXCEPTION;
+          } else if (mConsumerCounter == TIMEOUT_OCCURRED
+              || mProducerCounter == TIMEOUT_OCCURRED) {
+            return SynchronizedQueueResult.THREADS_TIMEDOUT;
+          } else {
+            return SynchronizedQueueResult.RAN_PROPERLY;
+          }
         } catch (Exception e) {
             return SynchronizedQueueResult.TESTING_LOGIC_THREW_EXCEPTION;
         }
