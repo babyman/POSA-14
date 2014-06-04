@@ -22,12 +22,12 @@ public class SimpleAtomicLongMultithreadedTest {
      * Our start points.
      */
     final static long INITIAL_VALUE = 0;
-    
+
     /**
      * Number of iterations to run the commands.
      */
     final static long mMaxIterations = 1000000;
-    
+
     /**
      * Barrier synchronizer that controls when the threads start
      * running the test.
@@ -41,10 +41,12 @@ public class SimpleAtomicLongMultithreadedTest {
     static CountDownLatch mStopLatch;
 
     /**
-     * An instance of our implementation of SimpleAtomicLong.
+     * An instance of our implementation of SimpleAtomicLong, which is
+     * defined as "volatile" to ensure proper visibility of its fields
+     * after construction.
      */
-    static SimpleAtomicLong mCounter;
-    
+    static volatile SimpleAtomicLong mCounter;
+
     /**
      * Runnable commands that use the mCounter methods
      * get()
@@ -58,7 +60,7 @@ public class SimpleAtomicLongMultithreadedTest {
     static Runnable getIncrementCommand;
     static Runnable decrementGetCommand;
     static Runnable getDecrementCommand;
-    
+
     /**
      * The value of mCounter prior to any changes made by testing.
      */
@@ -69,7 +71,7 @@ public class SimpleAtomicLongMultithreadedTest {
      * individual command.
      */
     final int numThreads = 5;
-	
+
     /**
      * @class RunTest
      *
@@ -77,7 +79,7 @@ public class SimpleAtomicLongMultithreadedTest {
      *        through the loop.
      */
     static class RunTest implements Runnable
-    { 
+    {
         /**
          * A Command that determines what operation is done within the
          * loop.
@@ -89,14 +91,14 @@ public class SimpleAtomicLongMultithreadedTest {
          * command has been called. Initially equal to zero.
          */
         private long iterations = 0;
-        
+
         /**
          * Store the command in a data member field.
          */
         RunTest(Runnable command) {
             mCommand = command;
         }
-        
+
         /**
          * Run the command within a loop.
          */
@@ -108,7 +110,7 @@ public class SimpleAtomicLongMultithreadedTest {
                      * beginning the loop.
                      */
                     mStartBarrier.await();
-                
+
                     for (; iterations < mMaxIterations; ++iterations) {
                         mCommand.run();
                     }
@@ -120,7 +122,7 @@ public class SimpleAtomicLongMultithreadedTest {
                 fail("Runnable failed.");
             }
         }
-        
+
         /**
          * Returns the number of times this command has been performed.
          * @return iterations
@@ -128,8 +130,8 @@ public class SimpleAtomicLongMultithreadedTest {
         public long getIterations() {
             return iterations;
         }
-    }	
-    
+    }
+
     /**
      * Runs prior to all tests. Creates a static instance of
      * SimpleAtomicLong and all runnable commands.
@@ -140,7 +142,7 @@ public class SimpleAtomicLongMultithreadedTest {
          * Instance of SimpleAtomicLong class
          */
         mCounter = new SimpleAtomicLong(INITIAL_VALUE);
-		
+
         /**
          * Runnable commands that execute get(), incrementAndGet(),
          * getAndIncrement(), decrementAndGet(), getAndDecrement(),
@@ -152,7 +154,7 @@ public class SimpleAtomicLongMultithreadedTest {
         decrementGetCommand = new Runnable() { public void run() { mCounter.decrementAndGet(); } };
         getDecrementCommand = new Runnable() { public void run() { mCounter.getAndDecrement(); } };
     }
-	
+
     /**
      * Runs prior to each test. Stores the pre-test value of the mCounter.
      */
@@ -160,13 +162,13 @@ public class SimpleAtomicLongMultithreadedTest {
     public void setUp() throws Exception {
         preTestValue = mCounter.get();
     }
-	
+
     /**
      * Tests for proper concurrency and functionality of {@code get()}.
      */
     @Test
     public void multiGetTest() {
-        /** 
+        /**
          * run multiple threads calling mCounter.get().
          */
         runThreads(getCommand);
@@ -177,7 +179,7 @@ public class SimpleAtomicLongMultithreadedTest {
         assertEquals(preTestValue,
                      mCounter.get());
     }
-	
+
     /**
      * Tests for proper concurrency and functionality of {@code
      * incrementAndGet()}.
@@ -190,7 +192,7 @@ public class SimpleAtomicLongMultithreadedTest {
          * of maximum iterations times the number of threads plus the
          * pre-test value
          */
-        assertEquals(preTestValue 
+        assertEquals(preTestValue
                      + mMaxIterations*numThreads,
                      mCounter.get());
     }
@@ -201,11 +203,11 @@ public class SimpleAtomicLongMultithreadedTest {
     @Test
     public void multiGetAndIncrementTest() {
         runThreads(getIncrementCommand);
-        assertEquals(preTestValue 
+        assertEquals(preTestValue
                      + mMaxIterations*numThreads,
                      mCounter.get());
     }
-	
+
     /**
      * Tests for proper concurrency and functionality of {@code
      * decrementAndGet()}.
@@ -213,24 +215,24 @@ public class SimpleAtomicLongMultithreadedTest {
     @Test
 	public void multiDecrementAndGetTest() {
         runThreads(decrementGetCommand);
-        /** 
+        /**
          * Expected value of mCounter after threads have completed
          * running is the pre-test value minus the maximum iterations
          * times the number of threads that were run.
          */
-        assertEquals(preTestValue - 
-                     mMaxIterations*numThreads, 
+        assertEquals(preTestValue -
+                     mMaxIterations*numThreads,
                      mCounter.get());
     }
-	
+
     /**
      * Tests for proper concurrency and functionality of {@code getAndIncrement()}.
      */
     @Test
     public void multiGetAndDecrementTest() {
-        runThreads(getDecrementCommand); 
-        /** 
-         * expected value of mCounter after threads have completed running 
+        runThreads(getDecrementCommand);
+        /**
+         * expected value of mCounter after threads have completed running
          * is the pre-test value minus the maximum iterations times the number
          * of threads that were run
          */
@@ -238,7 +240,7 @@ public class SimpleAtomicLongMultithreadedTest {
                      mMaxIterations*numThreads,
                      mCounter.get());
     }
-	
+
     /**
      * Tests concurrent running of threads performing a variety of
      * operations on mCounter (e.g. {@code get()}, {@code
@@ -248,7 +250,7 @@ public class SimpleAtomicLongMultithreadedTest {
     @Test
     public void multiThreadedTest() {
         /**
-         * Run five threads concurrently, each performing a different 
+         * Run five threads concurrently, each performing a different
          * method on the SimpleAtomicLong instance
          */
         runThreads(null);
@@ -259,7 +261,7 @@ public class SimpleAtomicLongMultithreadedTest {
         assertEquals(preTestValue,
                      mCounter.get());
     }
-	
+
     /**
      * Runs numThreads concurrent threads executing the same command.
      * Has a CyclicBarrier and CountDownLatch to facilitate
@@ -269,7 +271,7 @@ public class SimpleAtomicLongMultithreadedTest {
     private void runThreads(Runnable command) {
         mStartBarrier = new CyclicBarrier(numThreads);
         mStopLatch = new CountDownLatch(numThreads);
-        try { 
+        try {
             /**
              * Create an array of RunTests whose Runnable commands
              * execute on the SimpleAtomicLong mMaxIterations number
@@ -285,36 +287,36 @@ public class SimpleAtomicLongMultithreadedTest {
                 runTests[2] = new RunTest(decrementGetCommand);
                 runTests[3] = new RunTest(getDecrementCommand);
                 runTests[4] = new RunTest(getIncrementCommand);
-            } 
+            }
             else {
                 runTests = new RunTest[numThreads];
                 for(int i = 0; i < runTests.length; i++)
                     runTests[i] = new RunTest(command);
             }
-			
+
             /**
              * Start threads whose Runnable commands execute on the
              * SimpleAtomicLong mMaxIterations number of times.
              */
-            for(int i = 0; i < runTests.length; i++) 
+            for(int i = 0; i < runTests.length; i++)
                 new Thread(runTests[i]).start();
-			
+
             /**
              * Barrier synchronizer that waits for all worker threads
              * to exit before continuing.
              */
             mStopLatch.await();
-	        
+
             /**
              * Check to ensure threads have run.
              */
             for(int i = 0; i < runTests.length; i++)
-                assertEquals("Threads have not executed.", 
+                assertEquals("Threads have not executed.",
                              mMaxIterations,
                              runTests[i].getIterations());
-        } catch (Exception e) { 
-            fail("Exception thrown."); 
-        }			
+        } catch (Exception e) {
+            fail("Exception thrown.");
+        }
     }
-	
+
 }
