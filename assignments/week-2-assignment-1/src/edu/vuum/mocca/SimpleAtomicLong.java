@@ -7,7 +7,7 @@ import java.util.concurrent.locks.Lock;
  * @class SimpleAtomicLong
  *
  * @brief This class implements a subset of the
- *        java.util.concurrent.atomic.AtomicLong class using a
+ *        java.util.concurrent.atomic.SimpleAtomicLong class using a
  *        ReentrantReadWriteLock to illustrate how they work.
  */
 class SimpleAtomicLong
@@ -20,9 +20,7 @@ class SimpleAtomicLong
     /**
      * The ReentrantReadWriteLock used to serialize access to mValue.
      */
-
-    // TODO -- you fill in here by replacing the null with an
-    // initialization of ReentrantReadWriteLock.
+    // TODO - add the implementation
     private final ReentrantReadWriteLock mRWLock = new ReentrantReadWriteLock();
 
     /**
@@ -30,7 +28,7 @@ class SimpleAtomicLong
      */
     public SimpleAtomicLong(long initialValue)
     {
-        // TODO -- you fill in here
+        // TODO - you fill in here
       mValue = initialValue;
     }
 
@@ -43,7 +41,7 @@ class SimpleAtomicLong
     {
         long value;
 
-        // TODO -- you fill in here
+        // TODO - you fill in here
       mRWLock.readLock().lock();
       value = mValue;
       mRWLock.readLock().unlock();
@@ -60,7 +58,7 @@ class SimpleAtomicLong
     {
         long value = 0;
 
-        // TODO -- you fill in here
+        // TODO - you fill in here
       value = alterAndGet(-1);
 
         return value;
@@ -75,7 +73,7 @@ class SimpleAtomicLong
     {
         long value = 0;
 
-        // TODO -- you fill in here
+        // TODO - you fill in here
       value = getAndAlter(1);
 
         return value;
@@ -90,7 +88,7 @@ class SimpleAtomicLong
     {
         long value = 0;
 
-        // TODO -- you fill in here
+        // TODO - you fill in here
       value = getAndAlter(-1);
 
         return value;
@@ -105,7 +103,7 @@ class SimpleAtomicLong
     {
         long value = 0;
 
-        // TODO -- you fill in here
+        // TODO - you fill in here
        value = alterAndGet(1);
 
         return value;
