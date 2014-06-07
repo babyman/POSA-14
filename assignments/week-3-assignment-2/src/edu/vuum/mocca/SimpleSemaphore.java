@@ -59,8 +59,6 @@ public class SimpleSemaphore {
 
         permits--;
 
-        condition.signalAll();
-
       } finally {
 
         lock.unlock();
@@ -85,8 +83,6 @@ public class SimpleSemaphore {
 
         permits--;
 
-        condition.signalAll();
-
       } finally {
 
         lock.unlock();
@@ -99,7 +95,20 @@ public class SimpleSemaphore {
      */
     void release() {
       // TODO - you fill in here.
+
+      lock.lock();
+
+      try {
+
         permits++;
+
+        condition.signalAll();
+
+      } finally {
+
+        lock.unlock();
+
+      }
     }
 
     /**
