@@ -102,7 +102,7 @@ public class SimpleSemaphore {
 
         permits++;
 
-        condition.signalAll();
+        condition.signal();
 
       } finally {
 
