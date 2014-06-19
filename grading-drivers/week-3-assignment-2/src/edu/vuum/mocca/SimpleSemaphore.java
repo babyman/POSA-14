@@ -46,15 +46,15 @@ public class SimpleSemaphore {
      * interrupted.
      */
     public void acquire() throws InterruptedException {
-        // TODO - you fill in here.
+      // TODO - you fill in here.
 
       lock.lockInterruptibly();
 
       try {
 
-        while(permits <= 0) {
+        while (permits <= 0) {
           condition.await();
-    }
+        }
 
         permits--;
 
@@ -70,15 +70,15 @@ public class SimpleSemaphore {
      * interrupted.
      */
     public void acquireUninterruptibly() {
-        // TODO - you fill in here.
+      // TODO - you fill in here.
 
       lock.lock();
 
       try {
 
-        while(permits <= 0) {
+        while (permits <= 0) {
           condition.awaitUninterruptibly();
-    }
+        }
 
         permits--;
 
@@ -93,7 +93,7 @@ public class SimpleSemaphore {
      * Return one permit to the semaphore.
      */
     void release() {
-        // TODO - you fill in here.
+      // TODO - you fill in here.
 
       lock.lock();
 
@@ -101,13 +101,15 @@ public class SimpleSemaphore {
 
         permits++;
 
-        condition.signal();
+        if (permits > 0) {
+          condition.signal();
+        }
 
       } finally {
 
         lock.unlock();
 
-    }
+      }
     }
 
     /**

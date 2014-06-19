@@ -101,7 +101,9 @@ public class SimpleSemaphore {
 
         permits++;
 
-        condition.signal();
+        if (permits > 0) {
+          condition.signal();
+        }
 
       } finally {
 
