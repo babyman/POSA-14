@@ -17,13 +17,13 @@ import android.os.Messenger;
  *        within a pool of Threads.  When it is created, it creates a
  *        ThreadPoolExecutor using the newFixedThreadPool() method of
  *        the Executors class.
- * 
+ *
  *        When this Service is started, it should be supplied with a
  *        URI for download and a Messenger.  It downloads the URI
  *        supplied, stores it on the Android file system, then returns
  *        the pathname of the downloaded file using the supplied
  *        Messenger.
- * 
+ *
  *        This class implements the Synchronous Service layer of the
  *        Half-Sync/Half-Async pattern.  It also implements a variant
  *        of the Factory Method pattern.
@@ -34,7 +34,7 @@ public class ThreadPoolDownloadService extends Service {
      * used to service download requests.
      */
     static final int MAX_THREADS = 4;
-	
+
     /**
      * The ExecutorService that references a ThreadPool.
      */
@@ -49,18 +49,18 @@ public class ThreadPoolDownloadService extends Service {
         // FixedThreadPool Executor that's configured to use
         // MAX_THREADS. Use a factory method in the Executors class.
 
-        mExecutor = null;
+        mExecutor = Executors.newFixedThreadPool(MAX_THREADS);
     }
 
     /**
      * Make an intent that will start this service if supplied to
      * startService() as a parameter.
-     * 
+     *
      * @param context		The context of the calling component.
      * @param handler		The handler that the service should
-     *                          use to respond with a result  
+     *                          use to respond with a result
      * @param uri               The web URL of a file to download
-     * 
+     *
      * This method utilizes the Factory Method makeMessengerIntent()
      * from the DownloadUtils class.  The returned intent is a Command
      * in the Command Processor Pattern. The intent contains a
@@ -74,7 +74,7 @@ public class ThreadPoolDownloadService extends Service {
         // invocation of the appropriate factory method in
         // DownloadUtils that makes a MessengerIntent.
 
-        return null;
+      return DownloadUtils.makeMessengerIntent(context, ThreadPoolDownloadService.class, handler, uri);
     }
 
     /**
@@ -93,10 +93,16 @@ public class ThreadPoolDownloadService extends Service {
         // the uri in the intent and returns the file's pathname using
         // a Messenger who's Bundle key is defined by DownloadUtils.MESSENGER_KEY.
 
-        Runnable downloadRunnable = null;
+        Runnable downloadRunnable = new Runnable() {
+          @Override
+          public void run() {
+            Messenger messenger = intent.getParcelableExtra(DownloadUtils.MESSENGER_KEY);
+            DownloadUtils.downloadAndRespond(getApplicationContext(), intent.getData(), messenger);
+          }
+        };
 
         mExecutor.execute(downloadRunnable);
-      
+
         // Tell the Android framework how to behave if this service is
         // interrupted.  In our case, we want to restart the service
         // then re-deliver the intent so that all files are eventually
