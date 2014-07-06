@@ -30,7 +30,7 @@ import android.widget.Toast;
  * Activity.  The AIDL interface object that's returned can then be
  * used to interact with the Service either synchronously or
  * asynchronously, depending on the type of AIDL interface requested.
- * 
+ *
  * Starting Bound Services to run synchronously in background Threads
  * from the asynchronous UI Thread is an example of the
  * Half-Sync/Half-Async Pattern.  Starting Bound Services using
@@ -38,7 +38,7 @@ import android.widget.Toast;
  * patterns.  The GeoNamesActivity plays the role of the Creator and
  * creates a Command in the form of an Intent.  The Intent is received
  * by the service process, which plays the role of the Executor.
- * 
+ *
  * The use of AIDL interfaces to pass information between two
  * different processes is an example of the Broker Pattern, in which
  * all communication-related functionality is encapsulated in the AIDL
@@ -50,16 +50,15 @@ public class GeoNamesActivity extends GeoNamesBase {
     /**
      * Used for debugging.
      */
-    private final String TAG = this.getClass().getSimpleName(); 
-    
+    private final String TAG = this.getClass().getSimpleName();
+
     /**
      * The AIDL Interface that's used to make twoway calls to the
      * GeoNamesServiceSync Service.  This object plays the role of
      * Requestor in the Broker Pattern.  If it's null then there's no
      * connection to the Service.
      */
-    GeoNamesCall mGeoNamesCall = null;
-     
+    GeoNamesCall
     /**
      * The AIDL Interface that we will use to make oneway calls to the
      * GeoNamesServiceAsync Service.  This plays the role of Requestor
@@ -67,8 +66,8 @@ public class GeoNamesActivity extends GeoNamesBase {
      * to the Service.
      */
     GeoNamesRequest mGeoNamesRequest = null;
-     
-    /** 
+
+    /**
      * This ServiceConnection is used to receive the GeoNamesCall
      * proxy after binding to the GeoNamesServiceSync Service using
      * bindService().
@@ -77,13 +76,11 @@ public class GeoNamesActivity extends GeoNamesBase {
             /**
              * Cast the returned IBinder object to the GeoNamesCall
              * AIDL Interface and store it for later use in
-             * mGeoNamesCall.
-             */
+             *             */
             @Override
             public void onServiceConnected(ComponentName name,
                                            IBinder service) {
             	Log.d(TAG, "ComponentName: " + name);
-                mGeoNamesCall = GeoNamesCall.Stub.asInterface(service);
             }
 
             /**
@@ -93,12 +90,11 @@ public class GeoNamesActivity extends GeoNamesBase {
              */
             @Override
             public void onServiceDisconnected(ComponentName name) {
-                mGeoNamesCall = null;
             }
-    	 
+
         };
-     
-    /** 
+
+    /**
      * This ServiceConnection is used to receive the GeoNamesRequest
      * proxy after binding to the GeoNamesServiceAsync Service using
      * bindService().
@@ -127,19 +123,18 @@ public class GeoNamesActivity extends GeoNamesBase {
 		public void onServiceDisconnected(ComponentName name) {
                 mGeoNamesRequest = null;
             }
-    	 
+
         };
-     
+
     /**
      * The implementation of the GeoNamesCallback AIDL
      * Interface. Should be passed to the GeoNamesServiceAsync
      * Service using the GeoNamesRequest.callWebService() method.
-     * 
+     *
      * This implementation of GeoNamesCallback.Stub plays the role of
      * Invoker in the Broker Pattern.
      */
-    GeoNamesCallback.Stub mGeoNamesCallback = new GeoNamesCallback.Stub() {
-            /**
+    GeoNamesCallback.Stub            /**
              * Called when the GeoNamesServiceAsync finishes obtaining
              * the results from the GeoNames Web service.  Use the
              * provided String to display the results in a TextView.
@@ -159,7 +154,7 @@ public class GeoNamesActivity extends GeoNamesBase {
                     });
             }
         };
-     
+
     /**
      * This method is called when a user presses a button (see
      * res/layout/GeoNamesActivity.xml)
@@ -171,30 +166,27 @@ public class GeoNamesActivity extends GeoNamesBase {
 
     	switch (view.getId()) {
         case R.id.bound_sync_button:
-            if (mGeoNamesCall != null)
-                try {
+            if (                try {
                     Log.d(TAG,
                           "Calling twoway GeoNamesServiceSync.getWebServiceResults()");
 
                     String results =
                         // Invoke the twoway call, which blocks until
                         // it gets a reply.
-                        mGeoNamesCall.getWebServiceResults(uri);
                     displayResults(results);
                 } catch (RemoteException e1) {
                     e1.printStackTrace();
                 }
-                
+
             break;
 
         case R.id.bound_async_button:
-            if (mGeoNamesRequest != null) 
+            if (mGeoNamesRequest != null)
                 try {
                     Log.d(TAG, "Calling oneway GeoNamesServiceAsync.callWebService()");
 
                     // Invoke the oneway call, which doesn't block.
                     mGeoNamesRequest.callWebService(uri,
-                                                    mGeoNamesCallback);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -209,22 +201,21 @@ public class GeoNamesActivity extends GeoNamesBase {
     @Override
     public void onStart () {
     	super.onStart();
-    	
+
         // Launch the designated Bound Service if they aren't already
     	// running via a call to bindService() Bind this activity to
     	// the GeoNamesService* Services if they aren't already bound.
 
-    	if (mGeoNamesCall == null) 
-            bindService(GeoNamesServiceSync.makeIntent(this), 
+    	if (            bindService(GeoNamesServiceSync.makeIntent(this),
                         mServiceConnectionSync,
                         BIND_AUTO_CREATE);
 
     	if (mGeoNamesRequest == null)
-            bindService(GeoNamesServiceAsync.makeIntent(this), 
-                        mServiceConnectionAsync, 
+            bindService(GeoNamesServiceAsync.makeIntent(this),
+                        mServiceConnectionAsync,
                         BIND_AUTO_CREATE);
     }
-    
+
     /**
      * Hook method called when the GeoNamesActivity becomes completely
      * hidden to unbind the Activity from the Services.
@@ -232,12 +223,11 @@ public class GeoNamesActivity extends GeoNamesBase {
     @Override
     public void onStop () {
     	super.onStop();
-    	
-    	// Unbind the Sync/Async Services if they are connected.
-    	if (mGeoNamesCall != null) 
-            unbindService(mServiceConnectionSync);
 
-    	if (mGeoNamesRequest != null) 
+    	// Unbind the Sync/Async Services if they are connected.
+    	if (            unbindService(mServiceConnectionSync);
+
+    	if (mGeoNamesRequest != null)
             unbindService(mServiceConnectionAsync);
     }
 }

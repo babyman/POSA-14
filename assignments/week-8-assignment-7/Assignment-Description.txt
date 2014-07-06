@@ -1,4 +1,4 @@
-Week 8: Programming Assignment 7
+
 
 Released Monday, June 30th, 2014
 Due Monday, July 14th, 2014
@@ -48,7 +48,7 @@ particular, you'll need to do the following:
 
   . Another overview of AIDL is available (starting at timestamp 7:00)
     in the video at
-  
+
     https://class.coursera.org/android-001/lecture/85
 
   . More detailed coverage of AIDL and Binder RPC (starting at
